@@ -1,6 +1,5 @@
 const fs = require("fs").promises;
 const path = require("path");
-const { app } = require("electron");
 
 let filePath;
 
@@ -8,10 +7,13 @@ let filePath;
 const getFilePath = () => {
   if (filePath) return filePath; // cache
 
-  const isPackaged = app.isPackaged;
-  const basePath = isPackaged
-    ? path.join(process.resourcesPath, "data") // packaged app
-    : path.join(__dirname, "..", "data");     // dev mode
+  const appBase = process.pkg
+  ? path.dirname(process.execPath)   // EXE'nin bulunduğu klasör
+  : path.join(__dirname, "..");      // Normal çalışma
+
+// Base path: exe ile aynı dizinde data klasörü
+
+const basePath = path.join(appBase, "data");
 
   filePath = path.join(basePath, "users.json");
   return filePath;
