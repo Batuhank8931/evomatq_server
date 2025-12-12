@@ -1,0 +1,39 @@
+{
+  "users": [
+    {
+      "user_id": 1,
+      "user_name": "Admin",
+      "user_role": "Admin",
+      "password": "1234",
+      "email": "admin123@tuborgsystem.com"
+    },
+    {
+      "user_id": 2,
+      "user_name": "creator_batuhan",
+      "user_role": "Requester",
+      "password": "123",
+      "email": "batuhan.creator@tuborgsystem.com"
+    },
+    {
+      "user_id": 3,
+      "user_name": "viewer_ali",
+      "user_role": "Reviewer",
+      "password": "12",
+      "email": "ali.reviewer@tuborgsystem.com"
+    },
+    {
+      "user_id": 4,
+      "user_name": "batuhan",
+      "user_role": "Reviewer",
+      "password": "12",
+      "email": "batuhan.reviewer@tuborgsystem.com"
+    },
+    {
+      "user_id": 5,
+      "user_name": "a",
+      "user_role": "Reviewer",
+      "password": "1",
+      "email": "aa@aa"
+    }
+  ]
+}

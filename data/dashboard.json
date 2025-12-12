@@ -1,0 +1,47 @@
+[
+  {
+    "id": 1,
+    "title": "Auto Shelves",
+    "description": "5 connected shelves",
+    "status": "ONLINE",
+    "buttonLabel": "Manage",
+    "img": "AutoShelfImg",
+    "path": "/autoshelves"
+  },
+  {
+    "id": 2,
+    "title": "Digital Labels",
+    "description": "Electronic shelf labels",
+    "status": "OFFLINE",
+    "buttonLabel": "View",
+    "img": "EinkImg",
+    "path": "/digitallabels"
+  },
+  {
+    "id": 3,
+    "title": "Auto SMD Storages",
+    "description": "Automated reel storage",
+    "status": "ONLINE",
+    "buttonLabel": "Manage",
+    "img": "CarouselImg",
+    "path": "/autosmdstorages"
+  },
+  {
+    "id": 4,
+    "title": "Industrial Vending Machine",
+    "description": "PicMaster D-ONE",
+    "status": "OFFLINE",
+    "buttonLabel": "View",
+    "img": "SmdImg",
+    "path": "/industrialvendingmachine"
+  },
+  {
+    "id": 5,
+    "title": "Auto Carousel Storages",
+    "description": "Vertical rotating racks",
+    "status": "ONLINE",
+    "buttonLabel": "Manage",
+    "img": "VendingImg",
+    "path": "/autocarouselstorages"
+  }
+]
