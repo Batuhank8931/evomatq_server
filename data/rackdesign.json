@@ -1,0 +1,70 @@
+[
+    {
+        "rack_id": 1,
+        "design": [
+            {
+                "level_id": 1,
+                "slot_id": 1,
+                "rfid": "ESOT-1102-1814",
+                "quantity": 203,
+                "weight": 31
+            },
+            {
+                "level_id": 1,
+                "slot_id": 2,
+                "rfid": "ESOT-1101-3333",
+                "quantity": 0,
+                "weight": 0
+            },
+            {
+                "level_id": 1,
+                "slot_id": 3,
+                "rfid": "ESOT-1101-1111",
+                "quantity": 20,
+                "weight": 60
+            },
+            {
+                "level_id": 1,
+                "slot_id": 4,
+                "rfid": "ESOT-1101-3131",
+                "quantity": 0,
+                "weight": 0
+            },
+            {
+                "level_id": 1,
+                "slot_id": 5,
+                "rfid": "ESOT-1101-3333",
+                "quantity": 80,
+                "weight": 40
+            },
+            {
+                "level_id": 1,
+                "slot_id": 6,
+                "rfid": null,
+                "quantity": 0,
+                "weight": 0
+            },
+            {
+                "level_id": 1,
+                "slot_id": 7,
+                "rfid": null,
+                "quantity": 0,
+                "weight": 0
+            },
+            {
+                "level_id": 2,
+                "slot_id": 1,
+                "rfid": null,
+                "quantity": 0,
+                "weight": 0
+            },
+            {
+                "level_id": 2,
+                "slot_id": 2,
+                "rfid": null,
+                "quantity": 0,
+                "weight": 0
+            }
+        ]
+    }
+]

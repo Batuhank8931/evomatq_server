@@ -1,0 +1,160 @@
+[
+  {
+    "id": "1",
+    "box_width_mm": 110,
+    "product_code": "123",
+    "description": "M8x25 Socket Head Screw",
+    "standard": "DIN 912",
+    "unit_weight_gram": 13.3,
+    "status": "full",
+    "color": "#82e0aa",
+    "rfid": "ESOT-1101-4251",
+    "isEdited": true
+  },
+  {
+    "id": "2",
+    "box_width_mm": 110,
+    "product_code": "23",
+    "description": "M10x16 Phillips Screw",
+    "standard": "DIN 7985",
+    "unit_weight_gram": 12.32,
+    "status": "empty",
+    "color": "#bdc3c7",
+    "rfid": "ESOT-1102-1814"
+  },
+  {
+    "id": "3",
+    "box_width_mm": 110,
+    "product_code": "353592",
+    "description": "M10x20 Flat Washer",
+    "standard": "DIN 125",
+    "unit_weight_gram": 12.5,
+    "status": "full",
+    "color": "#82e0aa",
+    "rfid": "ESOT-1101-9876"
+  },
+  {
+    "id": "4",
+    "box_width_mm": 110,
+    "product_code": "317242",
+    "description": "M4x40 Flat Washer",
+    "standard": "DIN 125",
+    "unit_weight_gram": 4.43,
+    "status": "empty",
+    "color": "#bdc3c7",
+    "rfid": "ESOT-1104-7148"
+  },
+  {
+    "id": "6",
+    "box_width_mm": 110,
+    "product_code": "361138",
+    "description": "M10x16 Countersunk Bolt",
+    "standard": "DIN 7991",
+    "unit_weight_gram": 14.42,
+    "status": "full",
+    "color": "#82e0aa",
+    "rfid": "ESOT-1106-1480"
+  },
+  {
+    "id": "7",
+    "box_width_mm": 110,
+    "product_code": "352934",
+    "description": "M4x40 Phillips Screw",
+    "standard": "DIN 7985",
+    "unit_weight_gram": 8.99,
+    "status": "full",
+    "color": "#82e0aa",
+    "rfid": "ESOT-1107-2858"
+  },
+  {
+    "id": "8",
+    "box_width_mm": 110,
+    "product_code": "113",
+    "description": "M8x25 Socket Head Screw",
+    "standard": "DIN 912",
+    "unit_weight_gram": 13.3,
+    "status": "full",
+    "color": "#82e0aa",
+    "rfid": "ESOT-1101-42599"
+  },
+  {
+    "id": "9",
+    "box_width_mm": 110,
+    "product_code": "22",
+    "description": "M10x16 Phillips Screw",
+    "standard": "DIN 7985",
+    "unit_weight_gram": 12.32,
+    "status": "empty",
+    "color": "#bdc3c7",
+    "rfid": "ESOT-1102-1815"
+  },
+  {
+    "id": "10",
+    "box_width_mm": 110,
+    "product_code": "353590",
+    "description": "M10x20 Flat Washer",
+    "standard": "DIN 125",
+    "unit_weight_gram": 12.5,
+    "status": "full",
+    "color": "#82e0aa",
+    "rfid": "ESOT-1103-3261"
+  },
+  {
+    "id": "11",
+    "box_width_mm": 110,
+    "product_code": "317242",
+    "description": "M4x40 Flat Washer",
+    "standard": "DIN 125",
+    "unit_weight_gram": 4.43,
+    "status": "empty",
+    "color": "#bdc3c7",
+    "rfid": "ESOT-1104-7148"
+  },
+  {
+    "id": "12",
+    "box_width_mm": 110,
+    "product_code": "354978",
+    "description": "M5x40 Countersunk Bolt",
+    "standard": "DIN 7991",
+    "unit_weight_gram": 7.97,
+    "status": "low",
+    "color": "#f1948a",
+    "rfid": "ESOT-1105-6701"
+  },
+  {
+    "id": "13",
+    "box_width_mm": 110,
+    "product_code": "361138",
+    "description": "M10x16 Countersunk Bolt",
+    "standard": "DIN 7991",
+    "unit_weight_gram": 14.42,
+    "status": "full",
+    "color": "#82e0aa",
+    "rfid": "ESOT-1106-1480"
+  },
+  {
+    "id": "14",
+    "box_width_mm": 110,
+    "product_code": "352934",
+    "description": "M4x40 Phillips Screw",
+    "standard": "DIN 7985",
+    "unit_weight_gram": 8.99,
+    "status": "full",
+    "color": "#82e0aa",
+    "rfid": "ESOT-1107-2858"
+  },
+  {
+    "id": "15",
+    "box_width_mm": null,
+    "product_code": "1234",
+    "description": "deneme",
+    "standard": "dın_123",
+    "unit_weight_gram": 9151,
+    "status": null,
+    "color": null,
+    "rfid": "ESOT-1101-3333",
+    "quantity": 80,
+    "total_weight_kg": 732.08,
+    "isEdited": true
+  }
+]
