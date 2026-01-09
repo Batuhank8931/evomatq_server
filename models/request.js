@@ -2,8 +2,8 @@ const fs = require("fs").promises;
 const path = require("path");
 
 const appBase = process.pkg
-  ? path.dirname(process.execPath)   // EXE'nin bulunduğu klasör
-  : path.join(__dirname, "..");      // Normal çalışma
+    ? path.dirname(process.execPath)   // EXE'nin bulunduğu klasör
+    : path.join(__dirname, "..");      // Normal çalışma
 
 // Base path: exe ile aynı dizinde data klasörü
 
@@ -14,7 +14,9 @@ const filePath = path.join(basePath, "requests.json");
 
 const usersFilePath = path.join(basePath, "users.json");
 
-const rackdataPath = path.join(basePath, "rackdata.json");
+const rackdataPath = path.join(basePath, "productdata.json");
+
+const rackdesignPath = path.join(basePath, "rackdesign.json");
 
 const activereqeustsPath = path.join(basePath, "activerequests.json");
 
@@ -33,6 +35,15 @@ const readRequests = async () => {
 const readRackData = async () => {
     try {
         const fileContent = await fs.readFile(rackdataPath, "utf-8");
+        return JSON.parse(fileContent);
+    } catch {
+        return [];
+    }
+};
+
+const readRackDesignData = async () => {
+    try {
+        const fileContent = await fs.readFile(rackdesignPath, "utf-8");
         return JSON.parse(fileContent);
     } catch {
         return [];
@@ -69,6 +80,14 @@ const writeActiveRequests = async (requests) => {
     await fs.writeFile(activereqeustsPath, JSON.stringify(requests, null, 2), "utf-8");
 };
 
+const findQuantityByRfid = (rackDesignData, rfid) => {
+    for (const rack of rackDesignData) {
+        const found = rack.design.find(d => d.rfid === rfid);
+        if (found) return Number(found.quantity || 0);
+    }
+    return null;
+};
+
 // POST: Add a new request
 const addRequest = async (req, res) => {
     try {
@@ -81,7 +100,8 @@ const addRequest = async (req, res) => {
 
         const existingRequests = await readRequests();
         const activeExistingRequests = await readActiveRequests();
-        const rackData = await readRackData();   // <-- AVAILABLE QUANTITIES
+        const rackData = await readRackData();
+        const rackDesignData = await readRackDesignData()
 
         // NEXT GLOBAL ADDING NUMBER
         const nextAddingNumber = existingRequests.length > 0
@@ -111,7 +131,10 @@ const addRequest = async (req, res) => {
         const timestamp = `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
 
         // -------------- IMPORTANT PART: CHECK QUANTITIES FIRST --------------
+        // -------------- IMPORTANT PART: CHECK QUANTITIES FIRST --------------
         for (const r of requestsArray) {
+
+            // Ürün bilgisi rackData'dan
             const rackItem = rackData.find(x => x.product_code === r.productCode);
 
             if (!rackItem) {
@@ -120,9 +143,22 @@ const addRequest = async (req, res) => {
                 });
             }
 
-            const availableQty = Number(rackItem.quantity || 0);
+            // 👇 quantity rackDesignData'dan (RFID ile)
+            const availableQty = findQuantityByRfid(
+                rackDesignData,
+                rackItem.rfid
+            );
 
-            if (r.requestedQuantity > availableQty) {
+            if (availableQty === null) {
+                return res.status(400).json({
+                    message: `RFID ${rackItem.rfid} not found in rack design data`,
+                    productCode: r.productCode
+                });
+            }
+
+            const remainingQty = availableQty - r.requestedQuantity;
+
+            if (remainingQty < 0) {
                 return res.status(400).json({
                     message: `Requested quantity for product ${r.productCode} exceeds available quantity`,
                     productCode: r.productCode,
@@ -130,7 +166,13 @@ const addRequest = async (req, res) => {
                     available: availableQty
                 });
             }
+
+            // 👇 KALAN STOK
+            r.available = remainingQty;
         }
+        // ---------------------------------------------------------------------
+
+
         // ---------------------------------------------------------------------
 
         // Create new requests with unique ID
@@ -139,7 +181,7 @@ const addRequest = async (req, res) => {
             id: currentId++,
             description: r.description,
             standard: r.standard,
-            quantity: r.quantity || 0,
+            quantity: r.available || 0,
             requestedQuantity: r.requestedQuantity,
             status: "Pending",
             adding_number: nextAddingNumber,
@@ -182,11 +224,18 @@ const getRequests = async (req, res) => {
         const requests = await readRequests();
         const rackData = await readRackData();
         const users = await readUsers();
+        const rackDesignData = await readRackDesignData();
 
-        // Build fast maps
+        // 🔹 rackMap artık product_code -> { rfid, quantity }
         const rackMap = {};
-        rackData.forEach(r => rackMap[r.product_code] = r.quantity);
+        rackData.forEach(r => {
+            rackMap[r.product_code] = {
+                rfid: r.rfid,
+                quantity: findQuantityByRfid(rackDesignData, r.rfid)
+            };
+        });
 
+        // 🔹 Pending + Preparing toplam istekler
         const requestMap = {};
 
         requests
@@ -202,22 +251,32 @@ const getRequests = async (req, res) => {
                 requestMap[code] += qty;
             });
 
+        // 🔹 User map
         const userMap = {};
         users.forEach(u => userMap[u.user_id] = u.user_name);
 
-        // Enrich requests with quantity + user_name
-        const enrichedRequests = requests.map(reqItem => ({
-            ...reqItem,
-            availableQuantity: rackMap[reqItem.productCode] - (requestMap[reqItem.productCode] || 0) || 0,
-            user_name: userMap[reqItem.userId] || null
-        }));
+        // 🔹 Enrich
+        const enrichedRequests = requests.map(reqItem => {
+            const rackInfo = rackMap[reqItem.productCode];
+
+            const totalQty = rackInfo ? rackInfo.quantity : 0;
+            const usedQty = requestMap[reqItem.productCode] || 0;
+
+            return {
+                ...reqItem,
+                availableQuantity: Math.max(totalQty - usedQty, 0),
+                user_name: userMap[reqItem.userId] || null
+            };
+        });
 
         res.status(200).json(enrichedRequests);
+
     } catch (error) {
         console.error("Error:", error);
         res.status(500).json({ message: "Error retrieving requests", error });
     }
 };
+
 
 const getActiveRquests = async (req, res) => {
     try {
@@ -225,38 +284,47 @@ const getActiveRquests = async (req, res) => {
         const rackData = await readRackData();
         const users = await readUsers();
         const activeRequests = await readActiveRequests();
+        const rackDesignData = await readRackDesignData();
 
-        // Build fast maps
+        // 🔹 rackMap: product_code -> { rfid, quantity }
         const rackMap = {};
-        rackData.forEach(r => rackMap[r.product_code] = r.quantity);
+        rackData.forEach(r => {
+            rackMap[r.product_code] = {
+                rfid: r.rfid,
+                quantity: findQuantityByRfid(rackDesignData, r.rfid)
+            };
+        });
 
+        // 🔹 user map
         const userMap = {};
         users.forEach(u => userMap[u.user_id] = u.user_name);
 
-        // Enrich requests with quantity + user_name
-        const enrichedRequests = requests.map(reqItem => ({
-            ...reqItem,
-            availableQuantity: rackMap[reqItem.productCode] || 0,
-            user_name: userMap[reqItem.userId] || null
-        }));
-
-        // Get active adding_numbers
+        // 🔹 active adding_numbers
         const activeAddingNumbers = activeRequests
             .filter(ar => ar.status === "Pending" || ar.status === "Preparing")
             .map(ar => ar.adding_number);
 
-        // Filter enriched requests based on active adding_numbers
-        const filteredRequests = enrichedRequests.filter(reqItem =>
-            activeAddingNumbers.includes(reqItem.adding_number)
-        );
+        // 🔹 enrich + filter tek adımda
+        const filteredRequests = requests
+            .filter(reqItem => activeAddingNumbers.includes(reqItem.adding_number))
+            .map(reqItem => {
+                const rackInfo = rackMap[reqItem.productCode];
 
+                return {
+                    ...reqItem,
+                    availableQuantity: rackInfo ? rackInfo.quantity : 0,
+                    user_name: userMap[reqItem.userId] || null
+                };
+            });
 
         res.status(200).json(filteredRequests);
+
     } catch (error) {
         console.error("Error:", error);
         res.status(500).json({ message: "Error retrieving requests", error });
     }
 };
+
 
 
 // PUT: Update status for all requests by adding_number

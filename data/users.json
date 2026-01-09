@@ -5,28 +5,28 @@
       "user_name": "Admin",
       "user_role": "Admin",
       "password": "1234",
-      "email": "admin123@tuborgsystem.com"
+      "email": "admin123@system.com"
     },
     {
       "user_id": 2,
       "user_name": "creator_batuhan",
       "user_role": "Requester",
       "password": "123",
-      "email": "batuhan.creator@tuborgsystem.com"
+      "email": "batuhan.creator@system.com"
     },
     {
       "user_id": 3,
       "user_name": "viewer_ali",
       "user_role": "Reviewer",
       "password": "12",
-      "email": "ali.reviewer@tuborgsystem.com"
+      "email": "ali.reviewer@system.com"
     },
     {
       "user_id": 4,
       "user_name": "batuhan",
       "user_role": "Reviewer",
       "password": "12",
-      "email": "batuhan.reviewer@tuborgsystem.com"
+      "email": "batuhan.reviewer@system.com"
     },
     {
       "user_id": 5,
