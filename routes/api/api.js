@@ -20,6 +20,7 @@ const getReviewers = require("../../models/get_reviewers.js");
 const { GetRackDesign, InsertRackDesign, updateRackDesign, deleteRackDesign } = require("../../models/rack_design_settings.js");
 const { new_productStepTwo } = require("../../models/new_product.js");
 const { calibration } = require("../../models/calibration.js");
+const { getallrfids, getproductbyrfid } = require("../../models/getProductbyrfid.js");
 
 
 const router = express.Router();
@@ -67,5 +68,8 @@ router.delete("/deleterackdesign/:id", verifyToken, deleteRackDesign);
 
 router.post("/new_product_step_two", verifyToken, new_productStepTwo);
 router.post("/calibration", verifyToken, calibration);
+
+router.get("/getallrfids", verifyToken, getallrfids);
+router.post("/getproductbyrfid", verifyToken, getproductbyrfid);
 
 module.exports = router;

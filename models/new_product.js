@@ -48,19 +48,47 @@ const new_productStepTwo = async (req, res) => {
     await fs.writeFile(filePath, JSON.stringify(data, null, 2), "utf-8");
     console.log("Data written with state=2 and updated quantity");
 
-    // JSON’dan silinene kadar bekle
+    // JSON’dan silinene ya da error state’e çekilene kadar bekle
     const waitForDeletion = async () => {
       while (true) {
         try {
           const fileData = await fs.readFile(filePath, "utf-8");
           const currentData = JSON.parse(fileData);
-          const currentEntry = currentData.find(d => d.rfid === body.rfid);
+          const index = currentData.findIndex(d => d.rfid === body.rfid);
 
-          if (!currentEntry) {
+          // ✅ Kayıt silinmişse → normal çık
+          if (index === -1) {
             console.log("Entry deleted from JSON");
-            break; // silinmiş, çık
+            break;
           }
+
+          const currentEntry = currentData[index];
+
+          // ❌ state error ise → sil, terminate et
+          if (currentEntry.state === "error") {
+            // JSON’dan sil
+            currentData.splice(index, 1);
+
+            await fs.writeFile(
+              filePath,
+              JSON.stringify(currentData, null, 2),
+              "utf-8"
+            );
+
+            throw new Error(
+              "Rack does not contain the product. The operation has been terminated."
+            );
+          }
+
         } catch (err) {
+          // Bilinçli terminate hatası
+          if (
+            err.message ===
+            "Rack does not contain the product. The operation has been terminated."
+          ) {
+            throw err;
+          }
+
           console.error("Error reading JSON file:", err);
         }
 
