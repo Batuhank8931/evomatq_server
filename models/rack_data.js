@@ -14,6 +14,8 @@ const rack_desing = path.join(basePath, "rackdesign.json");
 
 const product_data = path.join(basePath, "productdata.json");
 
+const changed_data = path.join(basePath, "changedproduct.json");
+
 // Helper functions
 
 const readRackDesign = async () => {
@@ -26,6 +28,9 @@ const readProductData = async () => {
   return JSON.parse(fileContent);
 };
 
+const updateChangedProduct = async (dataArray) => {
+  await fs.writeFile(changed_data, JSON.stringify(dataArray, null, 2), "utf-8");
+};
 
 const updateProduct = async (data) => {
   await fs.writeFile(product_data, JSON.stringify(data, null, 2), "utf-8");
@@ -34,6 +39,28 @@ const updateProduct = async (data) => {
 const generateId = ({ rack, level, slot }) => {
   return `rack-${rack}-level-${level}-slot-${slot}`;
 };
+
+
+const generateNextId = (products) => {
+  if (!products.length) return "1";
+  const maxId = Math.max(...products.map(p => Number(p.id || 0)));
+  return String(maxId + 1);
+};
+
+const pickProductFields = (data) => {
+  const result = {
+    product_code: data.product_code,
+    description: data.description,
+    standard: data.standard
+  };
+
+  if (data.unit_weight_gram !== undefined) {
+    result.unit_weight_gram = data.unit_weight_gram;
+  }
+
+  return result;
+};
+
 
 const parseRackId = (id) => {
   const match = id.match(/rack-(\d+)-level-(\d+)-slot-(\d+)/);
@@ -109,8 +136,6 @@ const getRacks = async (req, res) => {
 };
 
 
-
-
 // PUT (update) rack by ID
 const updateRack = async (req, res) => {
   try {
@@ -128,44 +153,77 @@ const updateRack = async (req, res) => {
     // 2️⃣ rackdesign.json → RFID bul
     const rackDesigns = await readRackDesign();
 
-    const rackItem = rackDesigns.find(r => r.rack_id === rack);
+    const rackItem = rackDesigns.find(r => String(r.rack_id) === String(rack));
+
     if (!rackItem) {
       return res.status(404).json({ message: "Rack not found" });
     }
 
     const slotDesign = rackItem.design.find(
-      d => d.level_id === level && d.slot_id === slot
+      d =>
+        String(d.level_id) === String(level) &&
+        String(d.slot_id) === String(slot)
     );
 
-    if (!slotDesign || !slotDesign.rfid) {
-      return res.status(404).json({ message: "Slot or RFID not found" });
+    if (!slotDesign) {
+      return res.status(404).json({ message: "Slot not found" });
     }
 
-    const rfid = slotDesign.rfid;
+    if (!slotDesign.rfid || String(slotDesign.rfid).trim() === "") {
+      return res.status(404).json({ message: "RFID not found" });
+    }
+
+    const oldRfid = String(slotDesign.rfid).trim().toUpperCase();
 
     // 3️⃣ productdata.json → ürünü bul
     const products = await readProductData();
-    const productIndex = products.findIndex(p => p.rfid === rfid);
 
+    const productIndex = products.findIndex(p =>
+      String(p.rfid).trim().toUpperCase() === oldRfid
+    );
+
+    const allRevisedData = [
+      {
+        ...updatedFields,
+        rack,
+        level,
+        slot
+      }
+    ];
+
+
+    console.log(allRevisedData);
+
+    await updateChangedProduct(allRevisedData);
+
+    const newRfid = updatedFields.rfid
+      ? String(updatedFields.rfid).trim().toUpperCase()
+      : null;
+
+    // 5️⃣ productdata.json güncelle (ürün varsa update, yoksa ekle)
     if (productIndex === -1) {
-      return res.status(404).json({
-        message: "Product not found for this RFID",
-        rfid
-      });
+      const newProduct = {
+        id: generateNextId(products),
+        ...pickProductFields(updatedFields),
+        rfid: newRfid || oldRfid
+      };
+
+      products.push(newProduct);
+      await updateProduct(products);
+
+      return res.status(200).json(newProduct);
+    } else {
+      products[productIndex] = {
+        ...products[productIndex],
+        ...pickProductFields(updatedFields),
+        rfid: newRfid || oldRfid
+      };
+
+      await updateProduct(products);
+
+      return res.status(200).json(products[productIndex]);
     }
 
-    // 4️⃣ ürünü güncelle
-    products[productIndex] = {
-      ...products[productIndex],
-      ...updatedFields,
-      rfid,           // garanti
-      isEdited: true
-    };
-
-    // 5️⃣ productdata.json’a yaz
-    await updateProduct(products);
-
-    res.status(200).json(products[productIndex]);
 
   } catch (error) {
     res.status(500).json({
@@ -174,6 +232,8 @@ const updateRack = async (req, res) => {
     });
   }
 };
+
+
 
 
 module.exports = { getRacks, updateRack };

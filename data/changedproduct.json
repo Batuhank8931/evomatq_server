@@ -1,0 +1,12 @@
+[
+  {
+    "product_code": "12",
+    "description": "M8x25 Socket Head Screw",
+    "standard": "DIN 912",
+    "rfid": "ESOT-1102-1814",
+    "unit_weight_gram": 13.3,
+    "rack": 1,
+    "level": 1,
+    "slot": 1
+  }
+]

@@ -24,7 +24,8 @@ const get_flash_light = async (req, res) => {
         error: "id(string), light(1-4) and state(boolean) must be provided"
       });
     }
-
+    // JSON'u tamamen boş bir obje ile sıfırla
+    await fs.writeFile(filePath, JSON.stringify({}, null, 2), "utf-8");
     // Dosyayı oku
     let data = {};
     try {
